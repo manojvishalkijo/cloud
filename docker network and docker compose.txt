@@ -1,0 +1,234 @@
+docker network and docker compose:
+
+ docker bridge:
+- Open Docker Desktop
+- Open CMD
+- docker network
+- docker network ls
+- docker inspect bridge
+- docker network create test-bridge
+- docker run -d —name con1 nginx
+- docker run -d —name con2 nginx
+- docker network connect test-bridge con1
+- docker network connect test-bridge con2
+- docker exec -it con1 bash
+- apt update
+- apt install iputils-ping
+- ping con2
+- exit
+- docker pull ubuntu
+- docker run -dit —name host1 —network host ubuntu
+- docker run -dit —name host2 —network host ubuntu
+- docker exec host1 apt-get update
+- docker exec host1 apt-get install -y iputils-ping
+
+docker host:
+
+docker run -dit --name host_container1 --network host ubuntu:latest
+docker run -dit --name host_container2 --network host ubuntu:latest
+
+1. docker exec host_container1 apt-get update
+2. docker exec host_container1 apt-get install -y iputils-ping
+3. docker exec host_container2 apt-get update
+4. docker exec host_container2 apt-get install -y iputils-ping
+
+- docker exec host1 hostname -i
+- ip will come
+- docker exec host2 ping -c 4 (that ip)
+
+
+docker volumes:
+
+11. Once the installation is a success you should receive Complete! message in the terminal.
+SCREENSHOT 11 PLACE IT HERE
+12. Once after installing the docker start the docker daemon service using sudo systemctl start docker
+SCREENSHOT 12 PLACE IT HERE
+13. Finally run the command sudo docker run hello-world and the following message should be displayed in your terminal
+SCREENSHOT 13 PLACE IT HERE
+14. Create a docker volume using the command “docker volume create my_volume”
+SCREENSHOT 14 PLACE IT HERE
+15. Run an nginx container by mounting the created volume in it with the following command “docker run -d --name my_nginx -v my_volume:/usr/share/nginx/html -p 80:80 nginx”
+SCREENSHOT 15 PLACE IT HERE
+16. Inspect the container and observe whether the volume is mounted properly in it or not “docker inpect my_nginx”
+
+TDD:
+
+
+
+mkdir -p src test
+cd src
+touch Calculator.java
+cd ..
+cd test
+touch Test.java
+cd ..
+wget https://repo1.maven.org/maven2/junit/junit/4.13.2/junit-4.13.2.jar
+wget https://repo1.maven.org/maven2/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar
+
+
+- Calculator Code:
+
+java
+public class Calculator {
+    public int add(int a, int b) {
+        return a + b;
+    }
+}
+
+
+- CalculatorTest Code:
+
+java
+import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+
+public class CalculatorTest {
+    @Test
+    public void testAdd() {
+        Calculator calculator = new Calculator();
+        assertEquals(5, calculator.add(2, 3));
+    }
+}
+
+
+- Now run this command in terminal
+
+bash
+javac -cp .:junit-4.13.2.jar:hamcrest-core-1.3.jar src/Calculator.java test/CalculatorTest.java
+
+
+- This command is the display results in terminal (below)
+java -cp .:src:test:junit-4.13.2.jar:hamcrest-core-1.3.jar org.junit.runner.JUnitCore CalculatorTest
+
+
+
+
+
+
+
+
+public class TrainBookingSystem {
+    // Represents the total number of available seats
+    private int availableSeats;
+
+    public TrainBookingSystem(int seats) {
+        this.availableSeats = seats;
+    }
+
+    // Add train
+    public String addTrain(String trainName) {
+        // For simplicity, assume the train is always added successfully
+        return "Train " + trainName + " added successfully";
+    }
+
+    // Book ticket
+    public String bookTicket() {
+        if (availableSeats > 0) {
+            availableSeats--;
+            return "Ticket booked successfully";
+        } else {
+            return "No seats available";
+        }
+    }
+
+    // Cancel ticket
+    public String cancelTicket() {
+        availableSeats++;
+        return "Ticket cancelled successfully";
+    }
+
+    // Get available seats
+    public int getAvailableSeats() {
+        return availableSeats;
+    }
+}
+
+
+import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+
+public class TrainBookingSystemTest {
+
+    @Test
+    public void testAddTrain() {
+        TrainBookingSystem tbs = new TrainBookingSystem(10);
+        String result = tbs.addTrain("Express");
+        assertEquals("Train Express added successfully", result);
+    }
+
+    @Test
+    public void testInitialAvailableSeats() {
+        TrainBookingSystem tbs = new TrainBookingSystem(10);
+        assertEquals(10, tbs.getAvailableSeats());
+    }
+
+    @Test
+    public void testBookTicket() {
+        TrainBookingSystem tbs = new TrainBookingSystem(10);
+        String result = tbs.bookTicket();
+        assertEquals("Ticket booked successfully", result);
+        assertEquals(9, tbs.getAvailableSeats());
+    }
+
+    @Test
+    public void testBookTicketWhenFull() {
+        TrainBookingSystem tbs = new TrainBookingSystem(1);
+        tbs.bookTicket();
+        String result = tbs.bookTicket();
+        assertEquals("No seats available", result);
+    }
+
+    @Test
+    public void testCancelTicket() {
+        TrainBookingSystem tbs = new TrainBookingSystem(10);
+        tbs.bookTicket();
+        String result = tbs.cancelTicket();
+        assertEquals("Ticket cancelled successfully", result);
+        assertEquals(10, tbs.getAvailableSeats());
+    }
+
+    @Test
+    public void testCancelTicketWithoutBooking() {
+        TrainBookingSystem tbs = new TrainBookingSystem(10);
+        String result = tbs.cancelTicket();
+        assertEquals("Ticket cancelled successfully", result);
+        assertEquals(11, tbs.getAvailableSeats());
+    }
+
+    @Test
+    public void testMultipleBookings() {
+        TrainBookingSystem tbs = new TrainBookingSystem(5);
+        tbs.bookTicket();
+        tbs.bookTicket();
+        assertEquals(3, tbs.getAvailableSeats());
+    }
+
+    @Test
+    public void testMultipleCancellations() {
+        TrainBookingSystem tbs = new TrainBookingSystem(5);
+        tbs.bookTicket();
+        tbs.cancelTicket();
+        tbs.cancelTicket();
+        assertEquals(6, tbs.getAvailableSeats());
+    }
+
+    @Test
+    public void testSequentialBookingAndCancellation() {
+        TrainBookingSystem tbs = new TrainBookingSystem(3);
+        tbs.bookTicket();
+        tbs.bookTicket();
+        tbs.cancelTicket();
+        tbs.bookTicket();
+        assertEquals(2, tbs.getAvailableSeats());
+    }
+
+    @Test
+    public void testOverCancellation() {
+        TrainBookingSystem tbs = new TrainBookingSystem(3);
+        tbs.cancelTicket();
+        tbs.cancelTicket();
+        tbs.cancelTicket();
+        tbs.cancelTicket();
+        assertEquals(7, tbs.getAvailableSeats());
+    }
+}
